@@ -15,6 +15,7 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
 
   useEffect(() => {
     async function loadTasks() {
@@ -33,6 +34,27 @@ export default function TasksPage() {
 
     void loadTasks();
   }, []);
+
+  async function deleteTask(task: Task) {
+    if (!window.confirm(`Supprimer la tâche « ${task.title} » ?`)) return;
+
+    setDeletingId(task.id);
+    setError(null);
+    try {
+      const response = await fetch(`/api/tasks?id=${encodeURIComponent(String(task.id))}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const result: { error?: string } = await response.json();
+        throw new Error(result.error ?? "La suppression a échoué.");
+      }
+      setTasks((currentTasks) => currentTasks.filter((item) => item.id !== task.id));
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Impossible de supprimer cette tâche.");
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   const completedCount = tasks.filter((task) => task.completed).length;
 
@@ -87,11 +109,23 @@ export default function TasksPage() {
                     ✓
                   </span>
                 </div>
-                <div className="mt-7 flex items-center justify-between border-t border-slate-100 pt-4 text-sm">
-                  <span className="text-slate-500">Échéance : {task.dueDate}</span>
-                  <span className={`font-medium ${task.completed ? "text-emerald-700" : "text-amber-700"}`}>
-                    {task.completed ? "Terminée" : "À faire"}
-                  </span>
+                <div className="mt-7 border-t border-slate-100 pt-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
+                    <span className="text-slate-500">Échéance : {task.dueDate}</span>
+                    <span className={`font-medium ${task.completed ? "text-emerald-700" : "text-amber-700"}`}>
+                      {task.completed ? "Terminée" : "À faire"}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void deleteTask(task)}
+                    disabled={deletingId === task.id}
+                    className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-800 transition hover:border-red-300 hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    aria-label={`Supprimer la tâche ${task.title}`}
+                  >
+                    <span aria-hidden="true">×</span>
+                    {deletingId === task.id ? "Suppression en cours…" : "Supprimer la tâche"}
+                  </button>
                 </div>
               </article>
             ))}

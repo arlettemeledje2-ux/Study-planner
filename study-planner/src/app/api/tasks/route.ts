@@ -41,6 +41,26 @@ export async function GET() {
   }
 }
 
+export async function DELETE(request: Request) {
+  const id = new URL(request.url).searchParams.get("id");
+  if (!id) {
+    return NextResponse.json({ error: "L’identifiant de la tâche est requis." }, { status: 400 });
+  }
+
+  try {
+    const tasks = await readTasks();
+    const remainingTasks = tasks.filter((task) => String(task.id) !== id);
+    if (remainingTasks.length === tasks.length) {
+      return NextResponse.json({ error: "Tâche introuvable." }, { status: 404 });
+    }
+
+    await writeFile(tasksFilePath, `${JSON.stringify({ tasks: remainingTasks }, null, 2)}\n`, "utf8");
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json({ error: "Impossible de supprimer la tâche." }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   let body: unknown;
   try {
