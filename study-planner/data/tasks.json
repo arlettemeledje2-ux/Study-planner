@@ -1,0 +1,36 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Study for math exam",
+      "dueDate": "2026-03-20",
+      "subject": "Mathematics",
+      "priority": "high",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "title": "Read chapter 5",
+      "dueDate": "2026-03-18",
+      "subject": "Literature",
+      "priority": "medium",
+      "completed": true
+    },
+    {
+      "id": 3,
+      "title": "Prepare presentation slides",
+      "dueDate": "2026-03-22",
+      "subject": "History",
+      "priority": "low",
+      "completed": false
+    },
+    {
+      "title": "réviser chapitre 3",
+      "dueDate": "2026-10-29",
+      "subject": "géo",
+      "priority": "high",
+      "id": "56ead388-d4b0-4c73-9463-7de512905556",
+      "completed": false
+    }
+  ]
+}
