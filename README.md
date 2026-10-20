@@ -16,3 +16,11 @@ Une application de gestion de tâches pour étudiants
 - " En tant qu'étudiant, je veux recevoir un rappel avant l'échéance d'une tâche, afin de ne pas oublier de rendre mon travail"
 - " En tant qu'étudiant, je veux consulter mes échéances dans un calendrier, afin d'anticiper les semaines où ma charge de travail sera importante"
 - " En tant qu'étudiant, je veux décomposer un devoir en plusieurs sous-tâches, afin d'avancer progressivement sur les travaux complexes."
+
+#### Bash 
+git init
+git remote add origin https://github.com/arlettemeledje2/study-planner.git
+git add .
+git commit -m "Initial Next.js setup"
+git branch -M main
+git push -u origin main
