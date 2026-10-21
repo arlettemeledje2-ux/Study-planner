@@ -9,6 +9,7 @@ type Task = {
   dueDate: string;
   completed: boolean;
   subject?: string;
+  priority?: "low" | "medium" | "high" | string;
 };
 
 export default function TasksPage() {
@@ -89,46 +90,70 @@ export default function TasksPage() {
         ) : tasks.length === 0 ? (
           <p className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">Aucune tâche pour le moment.</p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {tasks.map((task) => (
-              <article
-                key={task.id}
-                className="flex min-h-48 flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm shadow-slate-900/[0.03] transition hover:-translate-y-0.5 hover:shadow-md"
-              >
-                <div className="flex items-start justify-between gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {tasks.map((task) => {
+              const priorityStyles: Record<string, string> = {
+                low: "border-slate-200 bg-slate-50 text-slate-700",
+                medium: "border-amber-200 bg-amber-50 text-amber-800",
+                high: "border-red-200 bg-red-50 text-red-800",
+              };
+              const priorityLabels: Record<string, string> = {
+                low: "Basse",
+                medium: "Moyenne",
+                high: "Haute",
+              };
+              const priority = task.priority ?? "";
+
+              return (
+                <article
+                  key={task.id}
+                  className={`flex min-h-56 flex-col justify-between rounded-2xl border p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-6 ${
+                    task.completed
+                      ? "border-emerald-200 bg-emerald-50/70 shadow-emerald-900/[0.03]"
+                      : "border-slate-200/80 bg-white shadow-slate-900/[0.03]"
+                  }`}
+                >
                   <div>
-                    {task.subject && <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-emerald-700">{task.subject}</p>}
-                    <h2 className="text-lg font-semibold leading-snug">{task.title}</h2>
-                  </div>
-                  <span
-                    aria-label={task.completed ? "Tâche terminée" : "Tâche à faire"}
-                    className={`mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-sm ${
-                      task.completed ? "border-emerald-600 bg-emerald-600 text-white" : "border-slate-300 text-transparent"
-                    }`}
-                  >
-                    ✓
-                  </span>
-                </div>
-                <div className="mt-7 border-t border-slate-100 pt-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-                    <span className="text-slate-500">Échéance : {task.dueDate}</span>
-                    <span className={`font-medium ${task.completed ? "text-emerald-700" : "text-amber-700"}`}>
-                      {task.completed ? "Terminée" : "À faire"}
-                    </span>
+                    <div className="flex items-start justify-between gap-3">
+                      <h2 className={`text-lg font-semibold leading-snug ${task.completed ? "text-slate-500 line-through decoration-emerald-600" : "text-slate-900"}`}>
+                        {task.title}
+                      </h2>
+                      <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${task.completed ? "bg-emerald-600 text-white" : "bg-amber-100 text-amber-800"}`}>
+                        {task.completed ? "✓ Terminée" : "À faire"}
+                      </span>
+                    </div>
+                    <dl className="mt-5 grid grid-cols-1 gap-3 text-sm min-[420px]:grid-cols-2">
+                      <div>
+                        <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Échéance</dt>
+                        <dd className="mt-1 break-words font-medium text-slate-700">{task.dueDate || "Non définie"}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Matière</dt>
+                        <dd className="mt-1 break-words font-medium text-slate-700">{task.subject || "Non définie"}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Priorité</dt>
+                        <dd className="mt-1">
+                          <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${priorityStyles[priority] ?? "border-slate-200 bg-slate-50 text-slate-600"}`}>
+                            {priorityLabels[priority] ?? "Non définie"}
+                          </span>
+                        </dd>
+                      </div>
+                    </dl>
                   </div>
                   <button
                     type="button"
                     onClick={() => void deleteTask(task)}
                     disabled={deletingId === task.id}
-                    className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-800 transition hover:border-red-300 hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="mt-5 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-red-200 bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-800 transition hover:border-red-300 hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                     aria-label={`Supprimer la tâche ${task.title}`}
                   >
                     <span aria-hidden="true">×</span>
                     {deletingId === task.id ? "Suppression en cours…" : "Supprimer la tâche"}
                   </button>
-                </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
       </section>
